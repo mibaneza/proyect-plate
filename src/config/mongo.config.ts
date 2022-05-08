@@ -4,8 +4,15 @@ import { MongooseModuleAsyncOptions, MongooseModuleOptions } from "@nestjs/mongo
 
 export default class MongoDBConfing{
     static getMongoDBConfig(configService: ConfigService): MongooseModuleOptions {
+        const protocol = configService.get('PROTOCOLO_MONGO');
+        const user = configService.get('USER_MONGO');
+        const password = configService.get('PASSWORD_MONGO');
+        const url = configService.get('URL_MONGO');
+        const db = configService.get('DB_MONGO');
+        const config = configService.get('CONFIG_MONGO');
+
         return {
-            uri: configService.get('URI_MONGO'),
+            uri: `${protocol}${user}:${password}@${url}/${db}${config}`
         }
     }
 }
