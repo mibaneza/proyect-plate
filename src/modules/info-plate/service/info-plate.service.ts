@@ -52,11 +52,11 @@ export class InfoPlateService {
             // Si tiene mas de un millon de registro desconmentar la liniea 53 
             // y comentar la linea 51
             //let listPlatesDB = await this.infoPlateModel.find({ plate: $in: plates });
-            if (!!!listPlatesDB) {
+            if (!!!listPlatesDB || listPlatesDB.length == 0) {
                 response['status'] = HttpStatus.NOT_FOUND;
                 response['body'] = {
                     success: false,
-                    err: 'No hay datos o es undefined es la respuesta'
+                    err: 'No hay registros de la placa'
                 };
             }
 
@@ -65,7 +65,7 @@ export class InfoPlateService {
             let platesDTO: InfoPlateDTO[] = [];
 
             for (const iterator of plates) {
-                const isPlaca = listPlates.find(x => x.plate == iterator);
+                const isPlaca = listPlates.find(x => x.plate.toUpperCase() == iterator.toUpperCase());
                 !!isPlaca && platesDTO.push({
                     plate: isPlaca.plate
                     , rq: isPlaca.rq
