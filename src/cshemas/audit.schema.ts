@@ -8,28 +8,28 @@ export class Audit {
     detail: String[];
 
     @Prop({ required: true })
-    cuantity: Number;
+    cuantity: number;
 
     @Prop()
     hour: String;
 
     @Prop()
-    seconds: Number;
+    seconds: number;
 
     @Prop()
-    milliseconds: Number;
+    milliseconds: number;
 
     @Prop()
-    inicioAt: String
+    inicioAt: Date;
 
     @Prop()
-    finAt: String
+    finAt: Date;
 
     @Prop()
-    createdAt?: Date
+    createdAt?: Date;
 
     @Prop()
-    updatedAt?: Date
+    updatedAt?: Date;
 }
 
 export const AuditSchena = SchemaFactory.createForClass(Audit);

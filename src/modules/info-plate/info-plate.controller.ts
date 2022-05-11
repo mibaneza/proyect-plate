@@ -1,4 +1,4 @@
-import { Controller, Post, Res, HttpStatus, Body, Get } from '@nestjs/common';
+import { Controller, Post, Res, HttpStatus, Body, Get, Param } from '@nestjs/common';
 
 import { InfoPlateService } from './service/info-plate.service';
 
@@ -17,5 +17,10 @@ constructor(private infoPlateService: InfoPlateService) {}
         const response = await this.infoPlateService.getInfoPlate()
         return res.status(response.status).json(response.body)
     }
-    
+
+    @Get('morth/:fecha')
+    async getGraOne(@Res() res, @Param('fecha') fecha: string){
+        const response = await this.infoPlateService.grafictOne(fecha)
+        return res.status(response.status).json(response.body)
+    }   
 }
