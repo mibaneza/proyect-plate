@@ -133,19 +133,18 @@ export class InfoPlateService {
             const responseArray = [];
             for (let index = 1; index < array + 1; index++) {
                 let day: string = "";
-                if (index > 10) {
-                    day = "-0" + index;
-                } else {
-                    day = "-" + index;
+                day =  String(index);
+                if (index <= 9) {
+                    day = "0" +  String(index);
                 }
-
-                let fechaAudits = moment(date + day, "YYYYMM-DD").format("YYYY-MM-DD");
+                const fechaX = `${date}${day}`
+                let fechaAudits = moment(fechaX, "YYYYMMDD").format("YYYY-MM-DD");
 
                 const body = {
                     'quantityNTAE': 0,
                     'detail': [],
                     'planified':0,
-                    'date': moment(date + day, "YYYYMM-DD").format("DD/MM/YYYY")
+                    'date': moment(fechaX, "YYYYMMDD").format("DD/MM/YYYY")
                 };
 
                 for (const iterator of listAudits) {
