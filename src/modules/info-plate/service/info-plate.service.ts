@@ -123,7 +123,7 @@ export class InfoPlateService {
         }
     }
 
-    async grafictOne(date: string = "202205"): Promise<ResponseModel> {
+    async graficLvlEffective(date: string = "202205"): Promise<ResponseModel> {
         const response: ResponseModel = {}
         const startDate: Date = moment(date, "YYYYMM").startOf('month').toDate();
         const endDate: Date = moment(date, "YYYYMM").endOf('month').toDate();
@@ -133,17 +133,15 @@ export class InfoPlateService {
                 $lt: endDate
             }
 
-            let listAuditDB = await this.auditModel.find({ inicioAt: beetwen });
-            let listPlanifiedDB = await this.planifiedModel.find({ date: beetwen });
+            let listAuditDB = await this.registersModel.find({ createdAt: beetwen, status: 1 });
             if (listAuditDB.length == 0 || !!!listAuditDB) {
                 response['status'] = HttpStatus.NOT_FOUND;
                 response['body'] = {
                     success: false,
-                    err: 'No hay registros de la auditoria'
+                    err: 'No hay registros'
                 };
             }
-            const listAudits = listAuditDB.map(x => x.toObject());
-            const listPlanified = listPlanifiedDB.map(x => x.toObject());
+            const listRegisters = listAuditDB.map(x => x.toObject());
             const array = Number(moment(date, "YYYYMM").endOf('month').format("DD"));
             const responseArray = [];
             for (let index = 1; index < array + 1; index++) {
@@ -154,26 +152,23 @@ export class InfoPlateService {
                 }
                 const fechaX = `${date}${day}`
                 let fechaAudits = moment(fechaX, "YYYYMMDD").format("YYYY-MM-DD");
-
+                const listForDateRegister = listRegisters.filter(x => moment(x.createdAt).format("YYYY-MM-DD") == fechaAudits);
                 const body = {
-                    'quantityNTAE': 0,
-                    'detail': [],
-                    'planified': 0,
-                    'date': moment(fechaX, "YYYYMMDD").format("DD/MM/YYYY")
+                    'NTAE': listForDateRegister.length,
+                    'NAET':0,
+                    'date': moment(fechaX, "YYYYMMDD").format("DD/MM/YYYY"),
+                    'NE':0
                 };
 
-                for (const iterator of listAudits) {
-                    if (moment(iterator.inicioAt).format("YYYY-MM-DD") == fechaAudits) {
-                        body['quantityNTAE'] += iterator.cuantity;
-                        body['detail'] = body['detail'].concat(iterator.detail);
+                for (const iterator of listForDateRegister) {
+                    const isHours = this.secondsToHour.compararFecha(iterator.createdAt, iterator.bumpers, iterator.finishedAt);
+                    if (isHours) {
+                        body['NAET'] += 1;
                     }
                 }
+                body['NE'] =  body['NAET']/body['NTAE']*100;
 
-                for (const iterator of listPlanified) {
-                    if (moment(iterator.date).format("YYYY-MM-DD") == fechaAudits) {
-                        body['planified'] += iterator.cuantity;
-                    }
-                }
+   
                 responseArray.push(body);
             }
 

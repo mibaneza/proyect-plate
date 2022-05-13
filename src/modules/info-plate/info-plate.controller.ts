@@ -20,7 +20,7 @@ constructor(private infoPlateService: InfoPlateService) {}
 
     @Get('morth/:fecha')
     async getGraOne(@Res() res, @Param('fecha') fecha: string){
-        const response = await this.infoPlateService.grafictOne(fecha)
+        const response = await this.infoPlateService.graficLvlEffective(fecha)
         return res.status(response.status).json(response.body)
     }   
 
