@@ -226,12 +226,12 @@ export class InfoPlateService {
                     'NTAE': listForDateRegister.length,
                     'NTAP': fechaPlanfic.cuantity,
                     'date': moment(fechaX, "YYYYMMDD").format("DD/MM/YYYY"),
-                    'NE': 0
+                    'NP': 0
                 };
 
-                body['NE'] = body['NTAE'] / body['NTAP'] * 100;
-                if(!(!!body['NE'])){
-                    body['NE'] = 0;
+                body['NP'] = body['NTAE'] / body['NTAP'] * 100;
+                if(!(!!body['NP'])){
+                    body['NP'] = 0;
                 }
 
                 responseArray.push(body);
