@@ -66,7 +66,7 @@ export class InfoPlateService {
             return response;
         }
     }
-    async filterPlate(plates: string[]): Promise<ResponseModel> {
+    async filterPlate(plates: object): Promise<ResponseModel> {
         const response: ResponseModel = {}
         if(!!!plates || plates.length == 0){
             response['status'] = HttpStatus.NOT_ACCEPTABLE;
