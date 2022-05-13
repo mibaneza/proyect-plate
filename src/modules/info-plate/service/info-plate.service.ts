@@ -95,7 +95,7 @@ export class InfoPlateService {
                 }
             }
             for (const iterator of listPlates) {
-                const detail = platesObjetList.find((x:any) => x.plate == iterator.plate);
+                const detail = platesObjetList.find((x: any) => x.plate == iterator.plate);
                 detail['rq'] = iterator.rq;
                 const createdAt = new Date();
                 const registerI: Registers = {
@@ -193,7 +193,25 @@ export class InfoPlateService {
 
     }
 
-    
+    async findByIdAndUpdateRegister(id: string = ""): Promise<ResponseModel> {
+        const response: ResponseModel = {}
+        const payload = {
+            status: 1,
+            finishedAt: new Date()
+        }
+        try {
+            let update = this.registersModel.findByIdAndUpdate(id, payload, { new: true });
+            response['status'] = HttpStatus.OK;
+            response['body'] = { success: true, result: update };
+        } catch (error) {
+            console.log(error);
+            response['status'] = HttpStatus.NOT_FOUND;
+            response['body'] = { success: false, err: error.menssage };
+        } finally {
+            return response;
+        }
+    }
+
     async createRegister(registerModel: Registers): Promise<Boolean> {
         let result: Boolean = false;
         try {

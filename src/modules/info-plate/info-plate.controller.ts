@@ -1,4 +1,4 @@
-import { Controller, Post, Res, HttpStatus, Body, Get, Param } from '@nestjs/common';
+import { Controller, Post, Res,  Body, Get, Param, Put } from '@nestjs/common';
 
 import { InfoPlateService } from './service/info-plate.service';
 
@@ -24,5 +24,10 @@ constructor(private infoPlateService: InfoPlateService) {}
         return res.status(response.status).json(response.body)
     }   
 
+    @Put('register/:id')
+    async getRegisterId(@Res() res, @Param('id') id: string){
+        const response = await this.infoPlateService.findByIdAndUpdateRegister(id)
+        return res.status(response.status).json(response.body)
+    }   
   
 }
