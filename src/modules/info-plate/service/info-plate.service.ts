@@ -45,7 +45,7 @@ export class InfoPlateService {
             return response;
         }
     }
-    
+
     async getPlateRegistered(): Promise<ResponseModel> {
         const response: ResponseModel = {}
         try {
@@ -101,7 +101,8 @@ export class InfoPlateService {
                     bumpers: moment(createdAt).add(4, 'hours').toDate(),
                     detail: new Object(iterator),
                     plate: iterator.plate,
-                    status: 0
+                    status: 0,
+                    finishedAt: null
                 }
                 const isRegistersCreate = await this.createRegister(registerI);
                 if (!isRegistersCreate) {
