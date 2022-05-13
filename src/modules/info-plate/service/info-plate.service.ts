@@ -96,6 +96,7 @@ export class InfoPlateService {
             }
             for (const iterator of listPlates) {
                 const detail = platesObjetList.find((x:any) => x.plate == iterator.plate);
+                detail['rq'] = iterator.rq;
                 const createdAt = new Date();
                 const registerI: Registers = {
                     createdAt,
@@ -192,6 +193,7 @@ export class InfoPlateService {
 
     }
 
+    
     async createRegister(registerModel: Registers): Promise<Boolean> {
         let result: Boolean = false;
         try {
