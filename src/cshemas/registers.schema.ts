@@ -17,7 +17,7 @@ export class Registers {
     bumpers: Date;
 
     @Prop()
-    finishedAt?: Date;
+    finishedAt?: Date = null;
 
     @Prop()
     createdAt?: Date;

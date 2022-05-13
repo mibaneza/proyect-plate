@@ -45,6 +45,7 @@ export class InfoPlateService {
             return response;
         }
     }
+    
     async getPlateRegistered(): Promise<ResponseModel> {
         const response: ResponseModel = {}
         try {
@@ -64,7 +65,6 @@ export class InfoPlateService {
             return response;
         }
     }
-
 
     async filterPlate(platesObjetList: any): Promise<ResponseModel> {
         const response: ResponseModel = {}
@@ -189,8 +189,6 @@ export class InfoPlateService {
 
 
     }
-
-
 
     async createRegister(registerModel: Registers): Promise<Boolean> {
         let result: Boolean = false;
