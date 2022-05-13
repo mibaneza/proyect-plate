@@ -94,12 +94,13 @@ export class InfoPlateService {
                     }
                 }
             }
-            for (const iterator of platesObjetList) {
+            for (const iterator of listPlates) {
+                const detail = platesObjetList.find((x:any) => x.plate == iterator.plate);
                 const createdAt = new Date();
                 const registerI: Registers = {
                     createdAt,
                     bumpers: moment(createdAt).add(4, 'hours').toDate(),
-                    detail: new Object(iterator),
+                    detail,
                     plate: iterator.plate,
                     status: 0,
                     finishedAt: null
