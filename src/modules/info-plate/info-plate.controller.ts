@@ -18,16 +18,18 @@ constructor(private infoPlateService: InfoPlateService) {}
         return res.status(response.status).json(response.body)
     }
 
-    @Get('morth/:fecha')
-    async getGraOne(@Res() res, @Param('fecha') fecha: string){
-        const response = await this.infoPlateService.graficLvlEffective(fecha)
+    @Get('lvlefficacy/:fecha')
+    async getLvlEfffective(@Res() res, @Param('fecha') fecha: string){
+        const response = await this.infoPlateService.graficLvlEfficacy(fecha)
         return res.status(response.status).json(response.body)
-    }  
-    @Get('lvlprod/:fecha')
+    } 
+
+    @Get('lvlproductivity/:fecha')
     async getLvlProd(@Res() res, @Param('fecha') fecha: string){
-        const response = await this.infoPlateService.graficLvlEffective(fecha)
+        const response = await this.infoPlateService.graficLvlProductivity(fecha)
         return res.status(response.status).json(response.body)
-    }   
+    } 
+
  
 
     @Put('register/:id')

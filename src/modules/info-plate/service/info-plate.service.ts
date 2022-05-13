@@ -123,7 +123,7 @@ export class InfoPlateService {
         }
     }
 
-    async graficLvlEffective(date: string = "202205"): Promise<ResponseModel> {
+    async graficLvlEfficacy(date: string = "202205"): Promise<ResponseModel> {
         const response: ResponseModel = {}
         const startDate: Date = moment(date, "YYYYMM").startOf('month').toDate();
         const endDate: Date = moment(date, "YYYYMM").endOf('month').toDate();
@@ -187,7 +187,67 @@ export class InfoPlateService {
 
 
     }
+    async graficLvlProductivity(date: string = "202205"): Promise<ResponseModel> {
+        const response: ResponseModel = {}
+        const startDate: Date = moment(date, "YYYYMM").startOf('month').toDate();
+        const endDate: Date = moment(date, "YYYYMM").endOf('month').toDate();
+        try {
+            const beetwen = {
+                $gte: startDate,
+                $lt: endDate
+            }
 
+            let listAuditDB = await this.registersModel.find({ createdAt: beetwen, status: 1 });
+            let planifiedModel = await this.planifiedModel.find({ date: beetwen });
+
+            if (listAuditDB.length == 0 || !!!listAuditDB) {
+                response['status'] = HttpStatus.NOT_FOUND;
+                response['body'] = {
+                    success: false,
+                    err: 'No hay registros'
+                };
+            }
+            const listRegisters = listAuditDB.map(x => x.toObject());
+            const listPlanifieds = planifiedModel.map(x => x.toObject());
+            const array = Number(moment(date, "YYYYMM").endOf('month').format("DD"));
+            const responseArray = [];
+            for (let index = 1; index < array + 1; index++) {
+                let day: string = "";
+                day = String(index);
+                if (index <= 9) {
+                    day = "0" + String(index);
+                }
+                const fechaX = `${date}${day}`
+                let fechaAudits = moment(fechaX, "YYYYMMDD").format("YYYY-MM-DD");
+                const listForDateRegister = listRegisters.filter(x => moment(x.createdAt).format("YYYY-MM-DD") == fechaAudits);
+                let fechaPlanfic:any = listPlanifieds.find(x => moment(x.date).format("YYYY-MM-DD") == fechaAudits);
+                !!!fechaPlanfic && (fechaPlanfic = {'cuantity': 0})
+                const body = {
+                    'NTAE': listForDateRegister.length,
+                    'NTAP': fechaPlanfic.cuantity,
+                    'date': moment(fechaX, "YYYYMMDD").format("DD/MM/YYYY"),
+                    'NE': 0
+                };
+
+                body['NE'] = body['NTAE'] / body['NTAP'] * 100;
+                if(!(!!body['NE'])){
+                    body['NE'] = 0;
+                }
+
+                responseArray.push(body);
+            }
+
+            response['status'] = HttpStatus.OK;
+            response['body'] = { success: true, result: responseArray }
+
+        } catch (error) {
+            response['status'] = HttpStatus.NOT_FOUND;
+            response['body'] = { success: false, err: error.menssage };
+            console.log(error);
+        } finally {
+            return response;
+        }
+    }
     async findByIdAndUpdateRegister(id: string = ""): Promise<ResponseModel> {
         const response: ResponseModel = {}
         const payload = {
