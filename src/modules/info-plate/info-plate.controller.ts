@@ -7,8 +7,8 @@ export class InfoPlateController {
 
 constructor(private infoPlateService: InfoPlateService) {}
     @Post('filter')
-    async filterInfoPlaca(@Res() res, @Body() listPlate: { plates : string[] }){
-        const response = await this.infoPlateService.filterPlate(listPlate.plates)
+    async filterInfoPlaca(@Res() res, @Body() listPlate: any){
+        const response = await this.infoPlateService.filterPlate(listPlate)
         return res.status(response.status).json(response.body)
     }
 
@@ -20,6 +20,12 @@ constructor(private infoPlateService: InfoPlateService) {}
 
     @Get('morth/:fecha')
     async getGraOne(@Res() res, @Param('fecha') fecha: string){
+        const response = await this.infoPlateService.grafictOne(fecha)
+        return res.status(response.status).json(response.body)
+    }   
+
+    @Get('morth/:fecha')
+    async postGraOne(@Res() res, @Param('fecha') fecha: string){
         const response = await this.infoPlateService.grafictOne(fecha)
         return res.status(response.status).json(response.body)
     }   

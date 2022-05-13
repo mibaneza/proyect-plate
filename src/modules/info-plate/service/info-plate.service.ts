@@ -9,6 +9,7 @@ import { InfoPlateDTO } from '../dto/info-placa.dto';
 import { SecondsToHour } from 'src/util/seconds-to-hour';
 import { Audit } from 'src/cshemas/audit.schema';
 import { Planified } from 'src/cshemas/planified.schema';
+import { Registers } from 'src/cshemas/registers.schema';
 
 
 
@@ -17,6 +18,7 @@ export class InfoPlateService {
     constructor(
         @InjectModel('InfoPlate') private readonly infoPlateModel: Model<InfoPlate>,
         @InjectModel('Audit') private auditModel: Model<Audit>,
+        @InjectModel('Registers') private registersModel: Model<Registers>,
         @InjectModel('Planified') private planifiedModel: Model<Planified>,
         private secondsToHour: SecondsToHour) { }
 
@@ -42,7 +44,28 @@ export class InfoPlateService {
             return response;
         }
     }
+    async getPlateRegistered(): Promise<ResponseModel> {
+        const response: ResponseModel = {}
+        try {
+            const listRegisters = await this.registersModel.find()
+            if (!!!listRegisters) {
+                response['body']['success'] = false;
+                response['status'] = HttpStatus.NOT_FOUND;;
+                response['body'] = { err: 'No hay datos o es undefined el la respuesta' };
+            }
+            response['body']['success'] = true;
+            response['status'] = HttpStatus.OK;;
+            response['body'] = { result: listRegisters }
 
+        } catch (error) {
+            response['body']['success'] = false;
+            response['status'] = HttpStatus.NOT_FOUND;;
+            response['body'] = { err: error };
+
+        } finally {
+            return response;
+        }
+    }
     async filterPlate(plates: string[]): Promise<ResponseModel> {
         const response: ResponseModel = {}
         if(!!!plates || plates.length == 0){
@@ -177,6 +200,9 @@ export class InfoPlateService {
 
 
     }
+
+
+
     async createAudit(auditModel: Audit): Promise<Boolean> {
         let result: Boolean = false;
         try {
