@@ -10,8 +10,8 @@ export class Registers {
     @Prop()
     status: number = 0;
 
-    @Prop({ required: true })
-    detail: object;
+    @Prop(({ type: Object }))
+    detail: Object;
 
     @Prop({ required: true })
     bumpers: Date;
