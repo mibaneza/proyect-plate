@@ -10,6 +10,7 @@ import { SecondsToHour } from 'src/util/seconds-to-hour';
 import { Audit } from 'src/cshemas/audit.schema';
 import { Planified } from 'src/cshemas/planified.schema';
 import { Registers } from 'src/cshemas/registers.schema';
+import e from 'express';
 
 
 
@@ -49,79 +50,67 @@ export class InfoPlateService {
         try {
             const listRegisters = await this.registersModel.find()
             if (!!!listRegisters) {
-                response['body']['success'] = false;
                 response['status'] = HttpStatus.NOT_FOUND;;
-                response['body'] = { err: 'No hay datos o es undefined el la respuesta' };
+                response['body'] = { err: 'No hay datos o es undefined el la respuesta', success: false };
             }
-            response['body']['success'] = true;
             response['status'] = HttpStatus.OK;;
-            response['body'] = { result: listRegisters }
+            response['body'] = { result: listRegisters, success: true }
 
         } catch (error) {
-            response['body']['success'] = false;
             response['status'] = HttpStatus.NOT_FOUND;;
-            response['body'] = { err: error };
+            response['body'] = { err: error, success: false };
 
         } finally {
             return response;
         }
     }
-    async filterPlate(plates: any): Promise<ResponseModel> {
+
+
+    async filterPlate(platesObjetList: any): Promise<ResponseModel> {
         const response: ResponseModel = {}
-        if(!!!plates || plates.length == 0){
+        if (!!!platesObjetList || platesObjetList.length == 0) {
             response['status'] = HttpStatus.NOT_ACCEPTABLE;
             response['body'] = { success: false, err: "No as enviado placas" };
             return response;
         }
+        platesObjetList.map((x: any) => x.plate = (x.plate.substring(0, 3) + '-' + x.plate.substring(3, 6)).toUpperCase());
 
         try {
-            const createdAt = new Date();
-
-            let listPlatesDB = await this.infoPlateModel.find();
+            //let listPlatesDB = await this.infoPlateModel.find();
             // Si tiene mas de un millon de registro desconmentar la liniea 53 
             // y comentar la linea 51
-            //let listPlatesDB = await this.infoPlateModel.find({ plate: $in: plates });
+            const inPlates = platesObjetList.map(x => x.plate);
+            let listPlates = [];
+            let listPlatesDB = await this.infoPlateModel.find({ plate: { $in: inPlates } });
+
             if (!!!listPlatesDB || listPlatesDB.length == 0) {
-                response['status'] = HttpStatus.NOT_FOUND;
-                response['body'] = {
-                    success: false,
-                    err: 'No hay registros de la placa'
-                };
+                listPlates = inPlates.map((x: any) => { return { plate: x, rq: false } });
+            } else {
+                listPlates = listPlatesDB.map(x => x.toObject());
+                for (const iterator of platesObjetList) {
+                    const isPlate = listPlates.find(x => x.plate == iterator.plate);
+                    if (!!!isPlate) {
+                        listPlates.push({ plate: iterator.plate, rq: false })
+                    }
+                }
             }
-
-            const listPlates = listPlatesDB.map(x => x.toObject());
-
-            let platesDTO: InfoPlateDTO[] = [];
-
-            for (const iterator of plates) {
-                const isPlaca = listPlates.find(x => x.plate.toUpperCase() == iterator.toUpperCase());
-                !!isPlaca && platesDTO.push({
-                    plate: isPlaca.plate
-                    , rq: isPlaca.rq
-                })
-            }
-            const updatedAt = new Date();
-            const { hourToString, secondsToNumber, millisecondsToNumber, inicioAt, finAt } =
-                this.secondsToHour.diff(createdAt, updatedAt);
-            console.log(createdAt);
-            console.log(updatedAt);
-            const auditI: Audit = {
-                'cuantity': plates.length,
-                'detail': plates,
-                'hour': hourToString,
-                'seconds': secondsToNumber,
-                'milliseconds': millisecondsToNumber,
-                inicioAt,
-                finAt
-            }
-            const isAuditCreate = await this.createAudit(auditI);
-            if (!isAuditCreate) {
-                response['status'] = HttpStatus.CONFLICT;
-                response['body'] = { success: false, err: 'No se pudo crear la Auditoria' }
+            for (const iterator of platesObjetList) {
+                const createdAt = new Date();
+                const registerI: Registers = {
+                    createdAt,
+                    bumpers: moment(createdAt).add(4, 'hours').toDate(),
+                    detail: new Object(iterator),
+                    plate: iterator.plate,
+                    status: 0
+                }
+                const isRegistersCreate = await this.createRegister(registerI);
+                if (!isRegistersCreate) {
+                    response['status'] = HttpStatus.CONFLICT;
+                    response['body'] = { success: false, err: 'No se pudo registrar' }
+                }
             }
             response['status'] = HttpStatus.OK;
-            response['body'] = { success: true, result: platesDTO }
-
+            response['body'] = { success: true, result: { message: 'Existo en el regristro' } };
         } catch (error) {
             console.log(error);
             response['status'] = HttpStatus.NOT_FOUND;
@@ -140,9 +129,9 @@ export class InfoPlateService {
                 $gte: startDate,
                 $lt: endDate
             }
-    
-            let listAuditDB = await this.auditModel.find({inicioAt:beetwen});
-            let listPlanifiedDB = await this.planifiedModel.find({date: beetwen});
+
+            let listAuditDB = await this.auditModel.find({ inicioAt: beetwen });
+            let listPlanifiedDB = await this.planifiedModel.find({ date: beetwen });
             if (listAuditDB.length == 0 || !!!listAuditDB) {
                 response['status'] = HttpStatus.NOT_FOUND;
                 response['body'] = {
@@ -156,9 +145,9 @@ export class InfoPlateService {
             const responseArray = [];
             for (let index = 1; index < array + 1; index++) {
                 let day: string = "";
-                day =  String(index);
+                day = String(index);
                 if (index <= 9) {
-                    day = "0" +  String(index);
+                    day = "0" + String(index);
                 }
                 const fechaX = `${date}${day}`
                 let fechaAudits = moment(fechaX, "YYYYMMDD").format("YYYY-MM-DD");
@@ -166,7 +155,7 @@ export class InfoPlateService {
                 const body = {
                     'quantityNTAE': 0,
                     'detail': [],
-                    'planified':0,
+                    'planified': 0,
                     'date': moment(fechaX, "YYYYMMDD").format("DD/MM/YYYY")
                 };
 
@@ -203,11 +192,11 @@ export class InfoPlateService {
 
 
 
-    async createAudit(auditModel: Audit): Promise<Boolean> {
+    async createRegister(registerModel: Registers): Promise<Boolean> {
         let result: Boolean = false;
         try {
-            let newAudit = new this.auditModel(auditModel);
-            await newAudit.save();
+            let newRegister = new this.registersModel(registerModel);
+            await newRegister.save();
             result = true;
         } catch (error) {
             console.log(error);
@@ -216,6 +205,5 @@ export class InfoPlateService {
         } finally {
             return result;
         }
-
     }
 }
