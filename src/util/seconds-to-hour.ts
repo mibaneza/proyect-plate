@@ -6,14 +6,19 @@ export class SecondsToHour {
 
     constructor() { }
 
-    diff(inicio: Date, fin: Date): { inicioAt: string, finAt: string, hourToString: String, secondsToNumber: Number, millisecondsToNumber: Number } {
+    diff(inicio: Date, fin: Date): {
+         inicioAt: Date, 
+         finAt: Date, 
+         hourToString: String, 
+         secondsToNumber: number,
+          millisecondsToNumber: number } {
         const val_Inicio = moment(inicio);
         const val_Fin = moment(fin);
         const diffSeconds = val_Fin.diff(val_Inicio, 'seconds');
         const diffMilliseconds = diffSeconds <= 2 ? val_Fin.diff(val_Inicio, 'milliseconds'): 0;
         return {
-            inicioAt: moment(inicio).toISOString(),
-            finAt: moment(fin).toISOString(),
+            inicioAt: moment(inicio).toDate(),
+            finAt: moment(fin).toDate(),
             hourToString: this.transform(diffSeconds),
             secondsToNumber: diffSeconds,
             millisecondsToNumber: diffMilliseconds
