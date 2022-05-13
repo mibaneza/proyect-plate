@@ -22,7 +22,13 @@ constructor(private infoPlateService: InfoPlateService) {}
     async getGraOne(@Res() res, @Param('fecha') fecha: string){
         const response = await this.infoPlateService.graficLvlEffective(fecha)
         return res.status(response.status).json(response.body)
+    }  
+    @Get('lvlprod/:fecha')
+    async getLvlProd(@Res() res, @Param('fecha') fecha: string){
+        const response = await this.infoPlateService.graficLvlEffective(fecha)
+        return res.status(response.status).json(response.body)
     }   
+ 
 
     @Put('register/:id')
     async getRegisterId(@Res() res, @Param('id') id: string){

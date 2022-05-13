@@ -155,9 +155,9 @@ export class InfoPlateService {
                 const listForDateRegister = listRegisters.filter(x => moment(x.createdAt).format("YYYY-MM-DD") == fechaAudits);
                 const body = {
                     'NTAE': listForDateRegister.length,
-                    'NAET':0,
+                    'NAET': 0,
                     'date': moment(fechaX, "YYYYMMDD").format("DD/MM/YYYY"),
-                    'NE':0
+                    'NE': 0
                 };
 
                 for (const iterator of listForDateRegister) {
@@ -166,9 +166,9 @@ export class InfoPlateService {
                         body['NAET'] += 1;
                     }
                 }
-                body['NE'] =  body['NAET']/body['NTAE']*100;
+                body['NE'] = body['NAET'] / body['NTAE'] * 100;
+                body['NE'] = !!!body['NE'] ? 0 : body['NE']
 
-   
                 responseArray.push(body);
             }
 
