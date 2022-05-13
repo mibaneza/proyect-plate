@@ -220,8 +220,8 @@ export class InfoPlateService {
                 const fechaX = `${date}${day}`
                 let fechaAudits = moment(fechaX, "YYYYMMDD").format("YYYY-MM-DD");
                 const listForDateRegister = listRegisters.filter(x => moment(x.createdAt).format("YYYY-MM-DD") == fechaAudits);
-                let fechaPlanfic:any = listPlanifieds.find(x => moment(x.date).format("YYYY-MM-DD") == fechaAudits);
-                !!!fechaPlanfic && (fechaPlanfic = {'cuantity': 0})
+                let fechaPlanfic: any = listPlanifieds.find(x => moment(x.date).format("YYYY-MM-DD") == fechaAudits);
+                !!!fechaPlanfic && (fechaPlanfic = { 'cuantity': 0 })
                 const body = {
                     'NTAE': listForDateRegister.length,
                     'NTAP': fechaPlanfic.cuantity,
@@ -230,7 +230,7 @@ export class InfoPlateService {
                 };
 
                 body['NP'] = body['NTAE'] / body['NTAP'] * 100;
-                if(!(!!body['NP'])){
+                if (body['NTAP'] == 0) {
                     body['NP'] = 0;
                 }
 
