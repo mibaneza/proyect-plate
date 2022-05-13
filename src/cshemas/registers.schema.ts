@@ -10,7 +10,7 @@ export class Registers {
     @Prop()
     status: number = 0;
 
-    @Prop(({ type: Object }))
+    @Prop(({ type: Object, required: true }))
     detail: Object;
 
     @Prop({ required: true })
