@@ -6,7 +6,7 @@ export type PlanifiedDocument = Planified & Document;
 export class Planified {
 
     @Prop()
-    date: Date;
+    date: String; //2022-05-13
 
     @Prop()
     cuantity: number = 0;
