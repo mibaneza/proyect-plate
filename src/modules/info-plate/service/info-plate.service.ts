@@ -111,7 +111,7 @@ export class InfoPlateService {
                 }
             }
             response['status'] = HttpStatus.OK;
-            response['body'] = { success: true, result: { message: 'Existo en el regristro' } };
+            response['body'] = { success: true, result: { message: 'Existo en el registro' } };
         } catch (error) {
             console.log(error);
             response['status'] = HttpStatus.NOT_FOUND;
