@@ -47,5 +47,14 @@ export class SecondsToHour {
             return n;
         }
     }
-
+     compararFecha(inicio = new Date(), fin = new Date(), actual = new Date()) {
+        inicio.setMinutes(0,0,0);
+        fin.setMinutes(0,0,0);
+        actual.setMinutes(0,0,0);
+        if (inicio.getTime() < actual.getTime() && fin.getTime() > actual.getTime()) {
+          return true;
+        } else {
+          return false;
+        }
+      }
 }
