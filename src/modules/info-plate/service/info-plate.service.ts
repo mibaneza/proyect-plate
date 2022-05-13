@@ -200,7 +200,7 @@ export class InfoPlateService {
             finishedAt: new Date()
         }
         try {
-            let update = this.registersModel.findByIdAndUpdate(id, payload, { new: true });
+            let update = await this.registersModel.findByIdAndUpdate(id, payload, { new: true });
             response['status'] = HttpStatus.OK;
             response['body'] = { success: true, result: update };
         } catch (error) {
