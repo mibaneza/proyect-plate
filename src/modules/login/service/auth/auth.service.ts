@@ -38,6 +38,18 @@ export class AuthService {
         const userModel = this.userModel;
         let user: any;
         let payload: {} = {}
+        function validateEmail(isEmail:string) {
+            const re = /^(([^<>()[\]\\.,;:\s@\"]+(\.[^<>()[\]\\.,;:\s@\"]+)*)|(\".+\"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
+            return re.test(isEmail);
+          }
+        function ValidEmail(){
+            if (!validateEmail(username)) {
+                response['status'] = HttpStatus.NOT_ACCEPTABLE;
+                response['body'] = { success: false, err: 'Email no valido' };
+                return false;
+            }
+            return true;
+        }
 
         async function findUser() {
             user = await userModel.findOne({ email: username });
@@ -75,11 +87,13 @@ export class AuthService {
 
 
         try {
+            let isEmail = await ValidEmail();
+            if (!isEmail) return;
             let _findUser = await findUser();
             if (!_findUser) return;
             let _validateUser = await validateUser();
             if (!_validateUser) return;
-            console.log("payload", payload);
+         //   console.log("payload", payload);
             return response = await this.generateToken(payload);
         } catch (error) {
 
