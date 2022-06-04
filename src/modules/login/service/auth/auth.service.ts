@@ -7,6 +7,8 @@ import e from 'express';
 import { ResponseModel } from 'src/model/response.interface';
 import * as bcrypt from 'bcrypt';
 import { ConfigService } from "@nestjs/config";
+import { Role } from './role.enum';
+import { UserModel } from 'src/model/user.interface';
 
 @Injectable()
 export class AuthService {
@@ -16,29 +18,29 @@ export class AuthService {
     ) {
 
     }
-    async generateToken(username): Promise<ResponseModel> {
+    async generateToken(payload): Promise<ResponseModel> {
         const response: ResponseModel = {}
-
-        const payload = {
-            username
-        }
-        const access_token = this.jwtTokenService.sign(username)
+        const { email } = payload;
+        //console.log(JSON.parse(JSON.stringify(payload)));
+        const payloadAsing = JSON.parse(JSON.stringify(payload));
+        const access_token = this.jwtTokenService.sign(payloadAsing)
 
         response['status'] = HttpStatus.OK;
-        response['body'] = { success: true, result: { username, access_token } };
+        response['body'] = { success: true, result: { email, access_token } };
         return response;
 
     }
 
     async validateUserCredentials(username: string, password: string): Promise<ResponseModel> {
-        
+
         this.jwtTokenService
-        const response: ResponseModel = {}
+        let response: ResponseModel = {}
         const userModel = this.userModel;
         let user: any;
+        let payload: {} = {}
 
         async function findUser() {
-            user = await userModel.findOne({ username });
+            user = await userModel.findOne({ email: username });
             if (user) return true;
             else {
                 response['status'] = HttpStatus.UNPROCESSABLE_ENTITY;
@@ -52,8 +54,15 @@ export class AuthService {
             let verifyPass = false;
             verifyPass = await validatePasswordUser(user.password);
 
-            if (verifyPass) return true;
-            else {
+            if (verifyPass) {
+                payload = {
+                    email: user.email,
+                    _id: user._id,
+                    role: user.role
+                }
+
+                return true
+            } else {
                 response['status'] = HttpStatus.UNPROCESSABLE_ENTITY;
                 response['body'] = { success: false, err: 'Credenciales no validas' };
                 return false;
@@ -68,10 +77,10 @@ export class AuthService {
         try {
             let _findUser = await findUser();
             if (!_findUser) return;
-            let _validateUser = validateUser();
+            let _validateUser = await validateUser();
             if (!_validateUser) return;
-
-            return await this.generateToken(username);
+            console.log("payload", payload);
+            return response = await this.generateToken(payload);
         } catch (error) {
 
         } finally {
@@ -83,7 +92,7 @@ export class AuthService {
     }
 
     async loginWithCredentials(user: any) {
-        const payload = { username: user.username, sub: user.userId };
+        const payload = { email: user.email, sub: user.userId };
 
         return {
             access_token: this.jwtTokenService.sign(payload),
@@ -96,7 +105,7 @@ export class AuthService {
         const saltOrRounds = 10;
         const hash = await bcrypt.hash("a" + password + "A", saltOrRounds);
         try {
-            let newRegister = new this.userModel({ username: "admin2022", password: hash });
+            let newRegister = new this.userModel({ email: "user2022@gmail.com", password: hash, role: [Role.USER], nombres: "Test2 Test3" });
             await newRegister.save();
             result = true;
         } catch (error) {
@@ -105,6 +114,31 @@ export class AuthService {
 
         } finally {
             return result;
+        }
+    }
+
+    async getInfoUser(user) {
+        const { _id } = user;
+        let response: ResponseModel = {}
+        let userModel = await this.userModel.findById(_id);
+        if (user) {
+
+            const payload: UserModel = {
+                _id:userModel._id.toString(),
+                email: userModel.email,
+                nombres: userModel.nombres,
+                role: userModel.role
+            };
+            response['status'] = HttpStatus.OK;
+            response['body'] = {
+                success: true, result: payload
+            }
+            return response;
+        }
+        else {
+            response['status'] = HttpStatus.UNPROCESSABLE_ENTITY;
+            response['body'] = { success: false, err: 'Usuario no valido' };
+            return response;
         }
     }
 }
