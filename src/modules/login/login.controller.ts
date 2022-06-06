@@ -26,8 +26,8 @@ export class LoginController {
 */
     @UseGuards(JwtAuthGuard)
     @Get('user-info')
-    @Roles(Role.USER, Role.ADMIN)
     async getUserInfo(@Res() res, @Request() req) {
+        console.log("req",req)
         const response = await this.authService.getInfoUser(req.user)
         return res.status(response.status).json(response.body);
     }
