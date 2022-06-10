@@ -22,7 +22,9 @@ export class RolesGuard implements CanActivate {
 
         const {rawHeaders} = context.switchToHttp().getRequest();
 
-        const istoken = rawHeaders.find(x => x.indexOf("Bearer") !== -1);
+        const istoken = rawHeaders.find(x => {
+            const bearer = x.split(" ");
+            return "Bearer" == bearer[0]});
         let token: string = "";
         if(!!istoken){
             token = istoken.split(" ")[1];
