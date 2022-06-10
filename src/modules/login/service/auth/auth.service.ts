@@ -3,17 +3,19 @@ import { JwtService } from '@nestjs/jwt';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
 import { User } from 'src/cshemas/user.schema';
+import { Perfil } from 'src/cshemas/perfil.schema';
 import e from 'express';
 import { ResponseModel } from 'src/model/response.interface';
 import * as bcrypt from 'bcrypt';
 import { ConfigService } from "@nestjs/config";
-import { Role } from './role.enum';
+//import { Perfil } from './role.enum';
 import { UserModel } from 'src/model/user.interface';
 
 @Injectable()
 export class AuthService {
     constructor(
         @InjectModel('User') private userModel: Model<User>,
+        @InjectModel('Perfil') private perfilModel: Model<Perfil>,
         private jwtTokenService: JwtService
     ) {
 
@@ -36,7 +38,9 @@ export class AuthService {
         this.jwtTokenService
         let response: ResponseModel = {}
         const userModel = this.userModel;
+        const perfilModel = this.perfilModel;
         let user: any;
+        let perfil: any;
         let payload: {} = {}
         function validateEmail(isEmail:string) {
             const re = /^(([^<>()[\]\\.,;:\s@\"]+(\.[^<>()[\]\\.,;:\s@\"]+)*)|(\".+\"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
@@ -52,8 +56,17 @@ export class AuthService {
         }
 
         async function findUser() {
-            user = await userModel.findOne({ email: username });
-            if (user) return true;
+            user = await userModel
+                .findOne({ email: username })
+                .populate({
+                    path: "perfilID",
+                    model: perfilModel,
+                    select: "role",
+                  })
+            if (user) {
+                console.log(user);
+                return true;
+            }
             else {
                 response['status'] = HttpStatus.UNPROCESSABLE_ENTITY;
                 response['body'] = { success: false, err: 'Usuario no valido' };
@@ -70,7 +83,7 @@ export class AuthService {
                 payload = {
                     email: user.email,
                     _id: user._id,
-                    role: user.role
+                    role: user.perfilID.role
                 }
 
                 return true
@@ -119,7 +132,11 @@ export class AuthService {
         const saltOrRounds = 10;
         const hash = await bcrypt.hash("a" + password + "A", saltOrRounds);
         try {
-            let newRegister = new this.userModel({ email: "user2022@gmail.com", password: hash, role: [Role.USER], nombres: "Test2 Test3" });
+            let newRegister = new this.userModel({ 
+            email: "admin2022@gmail.com", 
+            password: hash
+            , perfilID:"62a28833f0774041b367453b"
+            , nombres: "Test2 Test3" });
             await newRegister.save();
             result = true;
         } catch (error) {
@@ -141,7 +158,7 @@ export class AuthService {
                 _id:userModel._id.toString(),
                 email: userModel.email,
                 nombres: userModel.nombres,
-                role: userModel.role
+               // role: userModel.role
             };
             response['status'] = HttpStatus.OK;
             response['body'] = {

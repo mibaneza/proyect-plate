@@ -17,15 +17,16 @@ export class LoginController {
         return res.status(response.status).json(response.body);
     }
     
-/*
+
     @Get('create-user')
     async getAllInfoPlaca(@Res() res){
         const response = await this.authService.createUser();
         return res.status(200).json({status:true});
     }
-*/
+
     @UseGuards(JwtAuthGuard)
     @Get('user-info')
+    @Roles('get-user-info')
     async getUserInfo(@Res() res, @Request() req) {
         console.log("req",req)
         const response = await this.authService.getInfoUser(req.user)

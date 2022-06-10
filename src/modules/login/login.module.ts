@@ -8,6 +8,9 @@ import { LocalStrategy } from './service/auth/local.strategy';
 import { JwtModule } from '@nestjs/jwt';
 import { jwtConstants } from './service/auth/constants';
 import { PassportModule } from '@nestjs/passport';
+import { PerfilService } from './service/roles/perfil.service';
+import { PerfilController } from './perfil.controller';
+import { Perfil, PerfilSchena } from 'src/cshemas/perfil.schema';
 
 
 @Module({
@@ -16,6 +19,10 @@ import { PassportModule } from '@nestjs/passport';
       {
         name: User.name,
         schema: UserSchena
+      },
+      {
+        name: Perfil.name,
+        schema: PerfilSchena
       }
     ]),
     PassportModule,
@@ -24,7 +31,7 @@ import { PassportModule } from '@nestjs/passport';
       signOptions: {expiresIn: '7200s'}
     })
   ],
-  providers: [AuthService, JwtStrategy, LocalStrategy],
-  controllers: [LoginController]
+  providers: [AuthService, JwtStrategy, LocalStrategy, PerfilService],
+  controllers: [LoginController, PerfilController]
 })
 export class LoginModule {}
