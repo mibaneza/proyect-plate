@@ -19,6 +19,9 @@ export class Registers {
     @Prop()
     finishedAt: Date = null;
 
+    @Prop(({ type: Object }))
+    location: Object;
+
     @Prop()
     createdAt?: Date;
 

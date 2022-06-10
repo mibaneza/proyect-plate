@@ -104,6 +104,11 @@ export class InfoPlateService {
                     detail,
                     plate: iterator.plate,
                     status: 0,
+                    location: {
+                        lat: platesObjetList.lat,
+                        long: platesObjetList.long
+                    },
+                    //location:platesObjetList.location
                     finishedAt: null
                 }
                 const isRegistersCreate = await this.createRegister(registerI);
