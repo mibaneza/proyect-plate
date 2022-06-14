@@ -151,14 +151,20 @@ export class AuthService {
     async getInfoUser(user) {
         const { _id } = user;
         let response: ResponseModel = {}
-        let userModel = await this.userModel.findById(_id);
+        const perfilModel = this.perfilModel;
+        let userModel = await this.userModel.findById(_id)
+        .populate({
+            path: "perfilID",
+            model: perfilModel,
+            select: "role",
+          });
         if (user) {
 
             const payload: UserModel = {
                 _id:userModel._id.toString(),
                 email: userModel.email,
                 nombres: userModel.nombres,
-               // role: userModel.role
+                role: userModel.perfilID.role
             };
             response['status'] = HttpStatus.OK;
             response['body'] = {

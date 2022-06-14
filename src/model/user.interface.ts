@@ -5,7 +5,7 @@ export interface UserModel {
     email: String;
     nombres: String;
     
-   // role: Role[];
+   role: String[];
  /*   createdAt:any;
     updatedAt: any;*/
 
