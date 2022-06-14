@@ -5,7 +5,7 @@ export interface UserModel {
     email: String;
     nombres: String;
     
-   role: String[];
+   perfil: any;
  /*   createdAt:any;
     updatedAt: any;*/
 

@@ -156,7 +156,7 @@ export class AuthService {
         .populate({
             path: "perfilID",
             model: perfilModel,
-            select: "role",
+            select: "role name",
           });
         if (user) {
 
@@ -164,7 +164,7 @@ export class AuthService {
                 _id:userModel._id.toString(),
                 email: userModel.email,
                 nombres: userModel.nombres,
-                role: userModel.perfilID.role
+                perfil: userModel.perfilID
             };
             response['status'] = HttpStatus.OK;
             response['body'] = {
