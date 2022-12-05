@@ -162,9 +162,11 @@ export class InfoPlateService {
                 };
 
                 for (const iterator of listForDateRegister) {
-                    const isHours = this.secondsToHour.compararFecha(iterator.createdAt, iterator.bumpers, iterator.finishedAt);
-                    if (isHours) {
-                        body['NAET'] += 1;
+                    if(!!iterator.finishedAt){
+                        const isHours = this.secondsToHour.compararFecha(iterator.createdAt, iterator.bumpers, iterator.finishedAt);
+                        if (isHours) {
+                            body['NAET'] += 1;
+                        }
                     }
                 }
                 body['NE'] = body['NAET'] / body['NTAE'] * 100;
